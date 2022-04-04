@@ -32,8 +32,6 @@ class SubscriptionGuarantor {
   }
 
   retrySubscribing() {
-    print(pendingSubscriptions);
-    print(subscriptions);
     retryFuture = CancelableOperation.fromFuture(
       Future.delayed(
         const Duration(milliseconds: 500),

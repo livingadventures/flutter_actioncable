@@ -21,7 +21,6 @@ class Connection {
   bool send(Map<String, dynamic> data) {
     if (isOpen) {
       logger.log('Sending data');
-      print(data);
       webSocketChannel.sink.add(jsonEncode(data));
       return true;
     } else {
@@ -65,9 +64,6 @@ class Connection {
     webSocketChannel.stream.listen(
       (dynamic message) {
         Map<String, dynamic> data = jsonDecode(message);
-        if (data['type'] == null || data['type'] != 'ping') {
-          print(data);
-        }
         switch (data['type'] as String?) {
           case 'welcome':
             consumer.subscriptions.reload();
