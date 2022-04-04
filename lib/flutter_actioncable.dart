@@ -1,7 +1,4 @@
-library flutter_actioncable;
+export 'package:flutter_actioncable/src/main.dart';
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'package:flutter_actioncable/src/consumer.dart';
+export 'package:flutter_actioncable/src/subscription.dart';
