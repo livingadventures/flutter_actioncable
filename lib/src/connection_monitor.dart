@@ -21,7 +21,7 @@ class ConnectionMonitor {
   int secondsSince(int time) => (now() - time) ~/ 1000;
 
   int? get refreshedAt => pingedAt ?? startedAt;
-  bool get connectionIsStale => refreshedAt! > staleThreshold;
+  bool get connectionIsStale => secondsSince(refreshedAt!) > staleThreshold;
   bool get disconnectedRecenly =>
       disconnectedAt != null && secondsSince(disconnectedAt!) < staleThreshold;
 

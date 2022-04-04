@@ -36,6 +36,7 @@ class Connection {
     disconnected = false;
     webSocketChannel = IOWebSocketChannel(socket);
     installEventHandlers();
+    connectionMonitor.start();
   }
 
   String? getProtocol() {
