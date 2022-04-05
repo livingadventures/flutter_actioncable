@@ -3,9 +3,13 @@ import 'package:flutter_actioncable/src/subscriptions.dart';
 
 class Consumer {
   final String url;
+  final bool debug;
   late Connection _connection;
   late Subscriptions subscriptions;
-  Consumer(this.url) {
+  Consumer({
+    required this.url,
+    this.debug = true,
+  }) {
     _connection = Connection(this);
     subscriptions = Subscriptions(this);
   }

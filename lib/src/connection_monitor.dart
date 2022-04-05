@@ -45,6 +45,10 @@ class ConnectionMonitor {
       startedAt = now();
       stoppedAt = null;
       startPolling();
+      if (connection.consumer.debug) {
+        logger.log(
+            'ConnectionMonitor started. stale threshold = $staleThreshold');
+      }
     }
   }
 
@@ -52,6 +56,9 @@ class ConnectionMonitor {
     if (isRunning) {
       stoppedAt = now();
       stopPolling();
+      if (connection.consumer.debug) {
+        logger.log("ConnectionMonitor stopped");
+      }
     }
   }
 
@@ -63,10 +70,16 @@ class ConnectionMonitor {
     reconnectAttempts = 0;
     recordPing();
     disconnectedAt = null;
+    if (connection.consumer.debug) {
+      logger.log("ConnectionMonitor recorded connect");
+    }
   }
 
   void recordDisconnect() {
     disconnectedAt = now();
+    if (connection.consumer.debug) {
+      logger.log("ConnectionMonitor recorded disconnect");
+    }
   }
 
   void startPolling() {
@@ -92,12 +105,20 @@ class ConnectionMonitor {
 
   void reconnectIfStale() {
     if (connectionIsStale) {
+      if (connection.consumer.debug) {
+        logger.log(
+            'ConnectionMonitor detected stale connection. reconnectAttempts = $reconnectAttempts, time stale = ${secondsSince(refreshedAt!)} s, stale threshold = $staleThreshold s');
+      }
       reconnectAttempts++;
       if (disconnectedRecenly) {
-        logger.log(
-            "ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(disconnectedAt!)} s");
+        if (connection.consumer.debug) {
+          logger.log(
+              "ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(disconnectedAt!)} s");
+        }
       } else {
-        logger.log('ConnectionMonitor reopening');
+        if (connection.consumer.debug) {
+          logger.log('ConnectionMonitor reopening');
+        }
         connection.reopen();
       }
     }

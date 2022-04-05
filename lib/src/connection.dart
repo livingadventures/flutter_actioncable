@@ -20,7 +20,9 @@ class Connection {
 
   bool send(Map<String, dynamic> data) {
     if (isOpen) {
-      logger.log('Sending data');
+      if (consumer.debug) {
+        logger.log('Sending data');
+      }
       webSocketChannel.sink.add(jsonEncode(data));
       return true;
     } else {
@@ -32,7 +34,10 @@ class Connection {
     socket = await WebSocket.connect(consumer.url, headers: {
       'Origin': 'com.example.flutter_actioncable',
     });
-    logger.log("WebSocket onopen event, using '${getProtocol()}' subprotocol");
+    if (consumer.debug) {
+      logger
+          .log("WebSocket onopen event, using '${getProtocol()}' subprotocol");
+    }
     disconnected = false;
     webSocketChannel = IOWebSocketChannel(socket);
     installEventHandlers();
@@ -70,7 +75,9 @@ class Connection {
             consumer.subscriptions.reload();
             break;
           case 'disconnect':
-            logger.log('Disconnecting. Reason: ${data['reason']}');
+            if (consumer.debug) {
+              logger.log('Disconnecting. Reason: ${data['reason']}');
+            }
             close(allowReconnect: data['reconnect'] as bool);
             break;
           case 'ping':
@@ -87,7 +94,9 @@ class Connection {
             consumer.subscriptions.reject(data['identifier']);
             break;
           default:
-            logger.log('Message received');
+            if (consumer.debug) {
+              logger.log('Message received');
+            }
             consumer.subscriptions.notifyByIdentifier(
               data['identifier'],
               'received',
@@ -97,7 +106,9 @@ class Connection {
         }
       },
       onDone: () {
-        logger.log('WebSocket onclose event');
+        if (consumer.debug) {
+          logger.log('WebSocket onclose event');
+        }
         if (disconnected) {
           return;
         }
@@ -107,8 +118,10 @@ class Connection {
         consumer.subscriptions.notifyAll('disconnected');
       },
       onError: (_, __) {
-        logger.log('WebSocket onerror event');
-        logger.log(_.toString());
+        if (consumer.debug) {
+          logger.log('WebSocket onerror event');
+          logger.log(_.toString());
+        }
       },
       cancelOnError: false,
     );
@@ -124,15 +137,21 @@ class Connection {
   }
 
   void reopen() async {
-    logger.log('Reopening WebSocket, current state is ${getState()}');
+    if (consumer.debug) {
+      logger.log('Reopening WebSocket, current state is ${getState()}');
+    }
     if (isActive) {
       try {
         close();
       } catch (_) {
-        logger.log('Failed to reopen WebSocket');
-        logger.log(_.toString());
+        if (consumer.debug) {
+          logger.log('Failed to reopen WebSocket');
+          logger.log(_.toString());
+        }
       } finally {
-        logger.log('Reopening WebSocket in ${reopenDelay}ms');
+        if (consumer.debug) {
+          logger.log('Reopening WebSocket in ${reopenDelay}ms');
+        }
         await Future.delayed(Duration(milliseconds: reopenDelay), () {
           open();
         });
