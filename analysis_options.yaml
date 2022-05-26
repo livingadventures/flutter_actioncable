@@ -11,6 +11,9 @@ dart_code_metrics:
     cyclomatic-complexity: 20
     number-of-parameters: 4
     maximum-nesting-level: 5
+    source-lines-of-code: 50
+    maintainability-index: 50
+    number-of-methods: 10
   metrics-exclude:
     - test/**
   rules:
@@ -20,6 +23,3 @@ dart_code_metrics:
     - prefer-trailing-comma
     - prefer-conditional-expressions
     - no-equal-then-else
-  anti-patterns:
-    - long-method
-    - long-parameter-list
