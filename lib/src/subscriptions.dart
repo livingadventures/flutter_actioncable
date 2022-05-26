@@ -17,6 +17,7 @@ class Subscriptions {
     await consumer.ensureActiveConnection();
     notify(subscription, 'initialized');
     subscribe(subscription);
+
     return subscription;
   }
 
@@ -33,6 +34,7 @@ class Subscriptions {
       },
       onData: onData,
     );
+
     return add(subscription);
   }
 
@@ -53,6 +55,7 @@ class Subscriptions {
   Subscription forget(Subscription subscription) {
     subscriptionGuarantor.forget(subscription);
     subscriptions.remove(subscription);
+
     return subscription;
   }
 

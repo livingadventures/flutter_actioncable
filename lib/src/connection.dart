@@ -25,6 +25,7 @@ class Connection {
         logger.log(jsonEncode(data));
       }
       webSocketChannel.sink.add(jsonEncode(data));
+
       return true;
     } else {
       return false;
@@ -144,7 +145,7 @@ class Connection {
   }
 
   void close({bool allowReconnect = true}) {
-    if (allowReconnect == false) {
+    if (!allowReconnect) {
       connectionMonitor.stop();
     }
     if (isOpen) {

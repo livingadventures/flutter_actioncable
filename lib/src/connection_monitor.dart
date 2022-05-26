@@ -37,6 +37,7 @@ class ConnectionMonitor {
     ) as double;
     double jitterMax = reconnectAttempts == 0 ? 1.0 : reconnectionBackoffRate;
     double jitter = Random().nextDouble() * jitterMax;
+
     return staleThreshold * 1000.0 * backoff * (1.0 + jitter);
   }
 
@@ -47,7 +48,8 @@ class ConnectionMonitor {
       startPolling();
       if (connection.consumer.debug) {
         logger.log(
-            'ConnectionMonitor started. stale threshold = $staleThreshold');
+          'ConnectionMonitor started. stale threshold = $staleThreshold',
+        );
       }
     }
   }
@@ -107,13 +109,15 @@ class ConnectionMonitor {
     if (connectionIsStale) {
       if (connection.consumer.debug) {
         logger.log(
-            'ConnectionMonitor detected stale connection. reconnectAttempts = $reconnectAttempts, time stale = ${secondsSince(refreshedAt!)} s, stale threshold = $staleThreshold s');
+          'ConnectionMonitor detected stale connection. reconnectAttempts = $reconnectAttempts, time stale = ${secondsSince(refreshedAt!)} s, stale threshold = $staleThreshold s',
+        );
       }
       reconnectAttempts++;
       if (disconnectedRecenly) {
         if (connection.consumer.debug) {
           logger.log(
-              "ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(disconnectedAt!)} s");
+            "ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(disconnectedAt!)} s",
+          );
         }
       } else {
         if (connection.consumer.debug) {

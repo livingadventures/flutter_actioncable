@@ -7,13 +7,18 @@ class Subscription {
   late final String identifier;
   late final Function(dynamic)? onData;
   late final Function()? onCreated;
-  Subscription(this.consumer, Map<String, dynamic> params,
-      {this.onData, this.onCreated}) {
+  Subscription(
+    this.consumer,
+    Map<String, dynamic> params, {
+    this.onData,
+    this.onCreated,
+  }) {
     identifier = jsonEncode(params);
   }
 
   dynamic perform(String action, Map<String, dynamic> data) {
     data['action'] = action;
+
     return send(data);
   }
 
