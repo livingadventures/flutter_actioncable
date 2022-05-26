@@ -22,6 +22,7 @@ class Connection {
     if (isOpen) {
       if (consumer.debug) {
         logger.log('Sending data');
+        logger.log(jsonEncode(data));
       }
       webSocketChannel.sink.add(jsonEncode(data));
       return true;
@@ -31,9 +32,12 @@ class Connection {
   }
 
   Future<void> open() async {
-    socket = await WebSocket.connect(consumer.url, headers: {
-      'Origin': 'com.example.flutter_actioncable',
-    });
+    socket = await WebSocket.connect(
+      consumer.url,
+      headers: {
+        'Origin': 'com.example.flutter_actioncable',
+      },
+    );
     if (consumer.debug) {
       logger
           .log("WebSocket onopen event, using '${getProtocol()}' subprotocol");
@@ -72,6 +76,9 @@ class Connection {
         Map<String, dynamic> data = jsonDecode(message);
         switch (data['type'] as String?) {
           case 'welcome':
+            if (consumer.debug) {
+              logger.log('Welcome received');
+            }
             consumer.subscriptions.reload();
             break;
           case 'disconnect':
@@ -84,6 +91,10 @@ class Connection {
             connectionMonitor.recordPing();
             break;
           case 'confirm_subscription':
+            if (consumer.debug) {
+              logger.log('Subscription confirmed');
+              logger.log(jsonEncode(data));
+            }
             consumer.subscriptions.confirmSubscription(data['identifier']);
             consumer.subscriptions.notifyByIdentifier(
               data['identifier'],
@@ -91,11 +102,16 @@ class Connection {
             );
             break;
           case 'reject_subscription':
+            if (consumer.debug) {
+              logger.log('Subscription rejected');
+              logger.log(jsonEncode(data));
+            }
             consumer.subscriptions.reject(data['identifier']);
             break;
           default:
             if (consumer.debug) {
               logger.log('Message received');
+              logger.log(jsonEncode(data['message']));
             }
             consumer.subscriptions.notifyByIdentifier(
               data['identifier'],
