@@ -32,21 +32,46 @@ class Connection {
     }
   }
 
-  Future<void> open() async {
-    socket = await WebSocket.connect(
-      consumer.url,
-      headers: {
-        'Origin': 'com.example.flutter_actioncable',
-      },
-    );
+  void onDisconnect() {
     if (consumer.debug) {
-      logger
-          .log("WebSocket onopen event, using '${getProtocol()}' subprotocol");
+      logger.log('WebSocket onclose event');
     }
-    disconnected = false;
-    webSocketChannel = IOWebSocketChannel(socket);
-    installEventHandlers();
-    connectionMonitor.start();
+    if (disconnected) {
+      return;
+    }
+
+    disconnected = true;
+    connectionMonitor.recordDisconnect();
+    consumer.subscriptions.notifyAll('disconnected');
+  }
+
+  void onError(Object exception, [StackTrace? stackTrace]) {
+    if (consumer.debug) {
+      logger.log('WebSocket onerror event');
+      logger.log(exception.toString());
+    }
+  }
+
+  Future<void> open() async {
+    try {
+      socket = await WebSocket.connect(
+        consumer.url,
+        headers: {
+          'Origin': 'com.example.flutter_actioncable',
+        },
+      );
+      if (consumer.debug) {
+        logger.log(
+          "WebSocket onopen event, using '${getProtocol()}' subprotocol",
+        );
+      }
+      disconnected = false;
+      webSocketChannel = IOWebSocketChannel(socket);
+      installEventHandlers();
+      connectionMonitor.start();
+    } catch (exception) {
+      onError(exception);
+    }
   }
 
   String? getProtocol() {
@@ -123,22 +148,10 @@ class Connection {
         }
       },
       onDone: () {
-        if (consumer.debug) {
-          logger.log('WebSocket onclose event');
-        }
-        if (disconnected) {
-          return;
-        }
-
-        disconnected = true;
-        connectionMonitor.recordDisconnect();
-        consumer.subscriptions.notifyAll('disconnected');
+        onDisconnect();
       },
       onError: (_, __) {
-        if (consumer.debug) {
-          logger.log('WebSocket onerror event');
-          logger.log(_.toString());
-        }
+        onError(_, __);
       },
       cancelOnError: false,
     );

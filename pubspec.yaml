@@ -1,7 +1,7 @@
 name: flutter_actioncable
 description: Actioncable adapter for flutter
-version: 0.0.1+2
-homepage: "https://github.com/jonorozcoc"
+version: 0.0.1+3
+homepage: "https://github.com/livingadventures/flutter_actioncable"
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
